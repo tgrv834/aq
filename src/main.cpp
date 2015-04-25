@@ -1,11 +1,13 @@
 #include <aq/common.hpp>
+#include <aq/shaderprogram.hpp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
-
-
+#include <cmath>
+#include <string>
+#include <fstream>
 
 GLOBAL const int g_windowWidth =  800;
 GLOBAL const int g_windowHeight = 600;
@@ -13,14 +15,15 @@ GLOBAL const int g_windowHeight = 600;
 //#include "../include/aq/common.hpp"
 
 
-void glfwHints() {
+
+
+INTERNAL void glfwHints() {
 	glfwWindowHint(GLFW_VERSION_MAJOR, 2);
 	glfwWindowHint(GLFW_VERSION_MINOR, 1);
 }
 
 int main(int argc, char** argv)
 {
-
 	GLFWwindow* window;
 	if (!glfwInit())
 		return 1;
@@ -37,14 +40,17 @@ int main(int argc, char** argv)
 	glfwMakeContextCurrent(window);
 
 	glewInit();  //init glew after gl context
-	
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
-
-	float vertices[] = { // x,y coords
-		0.0f, 0.5f,  // 1
-		-0.5f, -0.5f, // 2
-		0.5f, -0.5f, // 3
+	float vertices[] = { // x,y coords  -> x, y, r, g, b
+		//tri strip to make square
+		0.5f, 0.5f, 0.0f, 0.0f, 1.0f, // 2    top right
+		-0.5f, 0.5f, 1.0f, 1.0f, 1.0f, // 3   top left
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, // 0   bot right
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, // 1  bot left		
 	};
+
 
 	//put data into vbo
 	GLuint vbo;
@@ -56,42 +62,49 @@ int main(int argc, char** argv)
 	// GL_STREAM_DRAW - changes a LOT, every frame
 
 	// define shaders
-	const char* vertexShaderText = {
-		"#version 120\n"
-		"\n"
-		"attribute vec2 position;"
-		"void main()"
-		"{"
-		"	gl_Position = vec4(position, 0.0, 1.0);"
-		"}"		
-	};
+	//in-line way
+//  const char* vertexShaderText = { "#version",};
+//	const char* fragmentShaderText = {
+	//from file
+	//std::string vertexShaderSource = stringFromFile("data/shaders/default.vert.glsl");
+	//const char* vertexShaderText = vertexShaderSource.c_str();
+	//std::string fragmentShaderSource = stringFromFile("data/shaders/default.frag.glsl");
+	//const char* fragmentShaderText = fragmentShaderSource.c_str();
 
-	const char* fragmentShaderText = {
-		"#version 120\n"
-		"\n"
-		"void main()"
-		"{"
-		"	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);"
-		"}"
-	};
+	AQ::ShaderProgram shaderProgram;
+	shaderProgram.attachShaderFromFile(AQ::ShaderType::Vertex, "data/shaders/default.vert.glsl");
+	shaderProgram.attachShaderFromFile(AQ::ShaderType::Fragment, "data/shaders/default.frag.glsl");
+
+	shaderProgram.bindAttributeLocation(0, "vertPosition");
+	shaderProgram.bindAttributeLocation(1, "vertColor");
+	shaderProgram.link();
+	shaderProgram.use();
+
 
 	// compile shaders
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderText, nullptr);
-	glCompileShader(vertexShader);
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderText, nullptr);
-	glCompileShader(fragmentShader);
+	//GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	//glShaderSource(vertexShader, 1, &vertexShaderText, nullptr);
+	//glCompileShader(vertexShader);
+	//GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	//glShaderSource(fragmentShader, 1, &fragmentShaderText, nullptr);
+	//glCompileShader(fragmentShader);
 
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
+	//GLuint shaderProgram = glCreateProgram();
+	//glAttachShader(shaderProgram, vertexShader);
+	//glAttachShader(shaderProgram, fragmentShader);
 
 	// set attribute?
-	glBindAttribLocation(shaderProgram, 0, "position");
+	//glBindAttribLocation(shaderProgram, 0, "vertPosition");
+	//glBindAttribLocation(shaderProgram, 1, "vertColor");
 
-	glLinkProgram(shaderProgram);
-	glUseProgram(shaderProgram);
+	//glLinkProgram(shaderProgram);
+	//glUseProgram(shaderProgram);
+
+
+	//GLint uniColor = glGetUniformLocation(shaderProgram, "uniColor");
+	
+
+
 
 
 	//handle escape / F11
@@ -107,14 +120,21 @@ int main(int argc, char** argv)
 
 
 		{
+			//float time = glfwGetTime(); //since init
+			//glUniform3f(uniColor, 0.0f, 0.0f, 0.5f * sin(3.0f * time));
+
+
 			//draw
-			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(0); //vertposition
+			glEnableVertexAttribArray(1); //vertcolor
 
-			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+			glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);  // from vertex data, grab 2 into attrib 0 (pos), every 5 floats
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (const GLvoid*)(2*sizeof(float)) ); // from vertex data, grab 3 into attib 1 (color), every 5, offset by 2
 
-			glDrawArrays(GL_TRIANGLES, 0, 3);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			glDisableVertexAttribArray(0);
+			glDisableVertexAttribArray(0); //vertposition
+			glDisableVertexAttribArray(1); //vertcolor
 		}
 
 
