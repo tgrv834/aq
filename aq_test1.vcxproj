@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>G:\src\aq\external\glew-1.12.0\include;G:\src\aq\external\glfw-3.1.1.bin.WIN32\include;include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>G:\src\aq\external\glew-1.12.0\include;G:\src\aq\external\glfw-3.1.1.bin.WIN32\include;G:\src\aq\external\stb-master\include;include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
