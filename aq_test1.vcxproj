@@ -71,12 +71,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\aq\image.cpp" />
     <ClCompile Include="src\aq\shaderprogram.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\aq\common.hpp" />
+    <ClInclude Include="include\aq\image.hpp" />
     <ClInclude Include="include\aq\shaderprogram.hpp" />
+    <ClInclude Include="include\aq\texture.hpp" />
+    <ClInclude Include="include\aq\types.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

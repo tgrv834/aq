@@ -21,12 +21,24 @@
     <ClCompile Include="src\aq\shaderprogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\aq\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\aq\common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\aq\shaderprogram.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\aq\types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\aq\texture.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\aq\image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
